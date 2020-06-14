@@ -1,8 +1,8 @@
 package com.example.cashflow;
 
 public class CashFlow {
-    public String type = "";
-    public int price = 0, month = 0, day = 0;
+    public String type;
+    public int price, month, day;
     public boolean isBill;
 
     public CashFlow(boolean isBill, String type, int price, int month, int day) throws CreationException
@@ -45,7 +45,7 @@ public class CashFlow {
 
     public String toString()
     {
-        return String.valueOf(month) + " " + String.valueOf(day) + " " + (isBill ? "B" : "P") + " " + type + " " + String.valueOf(price);
+        return month + " " + day + " " + (isBill ? "B" : "P") + " " + type + " " + price;
     }
 
     public String getDesc()
@@ -53,6 +53,12 @@ public class CashFlow {
         //return type + " ￥" + String.valueOf(price);
         return toString();
     }
+
+    public String showString()
+    {
+        return month + "/" + day + " " + (isBill ? "B" : "P") + " " + type + " ￥" + price;
+    }
+
 
     private boolean check(String isBill) throws Exception
     {

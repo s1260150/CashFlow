@@ -27,32 +27,54 @@ public class PaymentActivity extends AppCompatActivity {
     public static final String EXTRA_DATA_AMOUNT = "amount";
     public static final String EXTRA_DATA_IS_REVISE = "isrevise";
     public static final String EXTRA_DATA_REVISE_ID = "reviseID";
+    public static final String EXTRA_DATA_MONTH = "month";
+    public static final String EXTRA_DATA_DAY = "day";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
 
+        total = (TextView)findViewById(R.id.text_total);
+        type = (EditText)findViewById(R.id.text_type);
+        month = (EditText)findViewById(R.id.edit_month);
+        day = (EditText)findViewById(R.id.edit_day);
+
         Intent intent = getIntent();
         if((typeStr = intent.getStringExtra(EXTRA_DATA_TYPE)) == null) typeStr = "";
         if((totalStr = intent.getStringExtra(EXTRA_DATA_AMOUNT)) == null) totalStr = "";
         isBill = intent.getBooleanExtra(EXTRA_DATA_IS_BILL, true);
         isRevise = intent.getBooleanExtra(EXTRA_DATA_IS_REVISE, false);
-        if(isRevise) reviseID = intent.getIntExtra(EXTRA_DATA_REVISE_ID, -1);
+        if(isRevise)
+        {
+            reviseID = intent.getIntExtra(EXTRA_DATA_REVISE_ID, -1);
 
-        total = (TextView)findViewById(R.id.text_total);
-        type = (EditText)findViewById(R.id.text_type);
-        month = (EditText)findViewById(R.id.edit_month);
-        day = (EditText)findViewById(R.id.edit_day);
+            String m = String.valueOf(intent.getIntExtra(EXTRA_DATA_MONTH, -1));
+            String d = String.valueOf(intent.getIntExtra(EXTRA_DATA_DAY, -1));
+            if(m.equals("-1") || d.equals("-1"))
+            {
+                final DateFormat df = new SimpleDateFormat("MM/dd");
+                String[]date = df.format(new Date(System.currentTimeMillis())).split("/");
+
+                m = date[0];
+                d = date[1];
+            }
+
+            month.setText(m);
+            day.setText(d);
+        }
+        else
+        {
+            final DateFormat df = new SimpleDateFormat("MM/dd");
+            String[]date = df.format(new Date(System.currentTimeMillis())).split("/");
+
+            month.setText(date[0]);
+            day.setText(date[1]);
+        }
+
         total.setText(totalStr);
         type.setText(typeStr);
 
-
-        final DateFormat df = new SimpleDateFormat("MM/dd");
-        String[]date = df.format(new Date(System.currentTimeMillis())).split("/");
-
-        month.setText(date[0]);
-        day.setText(date[1]);
 
         findViewById(R.id.button_zero).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,13 +174,13 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void showConfirmDialog()
     {
+        String m = month.getText().toString();
+        String d = day.getText().toString();
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle("Confirm") // タイトル
-            .setMessage(typeStr + " ￥" + totalStr + "\nでよろしいですか？") // メッセージ
+            .setMessage(m + "/" + d + " " + typeStr + " ￥" + totalStr + "\nでよろしいですか？") // メッセージ
             .setNegativeButton("NO", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    totalStr = "";
-                    updateTotalText();
                 }
             }).setPositiveButton("YES", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
@@ -181,8 +203,7 @@ public class PaymentActivity extends AppCompatActivity {
 
         try
         {
-            if(typeStr.equals(MainActivity.STRING_PAYMENT)) isBill = false;
-            else isBill = true;
+            isBill = !typeStr.equals(MainActivity.STRING_PAYMENT);
 
             int m = Integer.parseInt(month.getText().toString());
             int d = Integer.parseInt(day.getText().toString());

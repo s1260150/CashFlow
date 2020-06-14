@@ -68,6 +68,8 @@ public class CashFlowActivity extends AppCompatActivity {
                 intent.putExtra(PaymentActivity.EXTRA_DATA_IS_BILL, target.isBill);
                 intent.putExtra(PaymentActivity.EXTRA_DATA_IS_REVISE, true);
                 intent.putExtra(PaymentActivity.EXTRA_DATA_REVISE_ID, id);
+                intent.putExtra(PaymentActivity.EXTRA_DATA_MONTH, target.month);
+                intent.putExtra(PaymentActivity.EXTRA_DATA_DAY, target.day);
 
                 startActivity(intent);
             }
@@ -88,7 +90,7 @@ public class CashFlowActivity extends AppCompatActivity {
         final int target_id = id;
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle("Confirm") // タイトル
-                .setMessage(target.getDesc() + "\nを削除してよろしいですか？")
+                .setMessage(target.showString() + "\nを削除してよろしいですか？")
                 .setNegativeButton("NO", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                     }
@@ -101,7 +103,7 @@ public class CashFlowActivity extends AppCompatActivity {
                 }
                 catch (IOException e)
                 {
-                    Toast.makeText(context, "ファイルの書き込みに失敗しました", Toast.LENGTH_LONG);
+                    Toast.makeText(context, "ファイルの書き込みに失敗しました", Toast.LENGTH_LONG).show();
                 }
 
                 adapter.notifyDataSetChanged();
